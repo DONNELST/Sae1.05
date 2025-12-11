@@ -1,7 +1,7 @@
 # -*-coding: utf-8 -*
 f = open('C:\\Users\\Admin\\Documents\\Sae1.05\\evenementSAE_15_2025.ics')
 file = f.read()
-champs = [
+champs = [ #servira plus tard
     "UID",
     "DATE",
     "HEURE",
