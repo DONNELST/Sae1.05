@@ -1,5 +1,5 @@
 # -*-coding: utf-8 -*
-f = open('C:\\Users\\Admin\\Documents\\Sae1.05\\evenementSAE_15_2025.ics')
+'''f = open('C:\\Users\\Admin\\Documents\\Sae1.05\\evenementSAE_15_2025.ics')
 file = f.read()
 champs = [ #servira plus tard
     "UID",
@@ -25,7 +25,7 @@ print(contenu) #à corriger, ne retourne rien (retourne un dictionnaire mais san
 
 
 
-
+'''
 
 '''
 entetes = [
@@ -56,11 +56,11 @@ with open("C:\\Users\\Admin\\Documents\\Sae1.05\\monFichier.csv", "w") as f:
         f.write(";".join(ligne) + "\n")
 
 f.close()'''
-'''
-#LA SUITE EST FAIT EN MAJORITÉ PAR CHATGPT (FONCTIONNEL : renvoie les valeurs dans un excel)
+
+#la suite est fonctionnel : renvoie les valeurs dans un excel
 import re
 
-f = open("C:\\Users\\Admin\\Documents\\Sae1.05\\evenementSAE_15_2025.ics", "r")
+f = open("C:\\Users\\Admin\\Documents\\sae1.05\\Sae1.05\\evenementSAE_15_2025.ics", "r")
 #Si on ne double pas les \, renvoie un warning (marche quand même)
 contenu = f.read()
 
@@ -101,4 +101,4 @@ with open("C:\\Users\\Admin\\Documents\\Sae1.05\\monFichier.csv", "w") as f:
     for ligne in valeurs:
         f.write(";".join(ligne) + "\n")
 
-print("✔ CSV généré : monFichier.csv")'''
+print("✔ CSV généré : monFichier.csv")
