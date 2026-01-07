@@ -1,6 +1,6 @@
 import re
 
-f = open("C:\\Users\\Admin\\Documents\\sae1.05\\Sae1.05\\ADE_RT1_Septembre2025_Decembre2025.ics", "r")
+f = open("C:\\Users\\Admin\\Documents\\Sae1.05\\ADE_RT1_Septembre2025_Decembre2025.ics", "r")
 #Si on ne double pas les \, renvoie un warning (marche quand même)
 contenu = f.read()
 

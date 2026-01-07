@@ -60,7 +60,7 @@ f.close()'''
 #la suite est fonctionnel : renvoie les valeurs dans un excel
 import re
 
-f = open("C:\\Users\\Admin\\Documents\\sae1.05\\Sae1.05\\evenementSAE_15_2025.ics", "r")
+f = open("C:\\Users\\Admin\\Documents\\Sae1.05\\evenementSAE_15_2025.ics", "r")
 #Si on ne double pas les \, renvoie un warning (marche quand même)
 contenu = f.read()
 
