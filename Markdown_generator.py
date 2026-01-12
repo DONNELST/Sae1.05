@@ -1,50 +1,110 @@
 import re
+import os
+from collections import defaultdict
 
+# ==============================
+# FICHIERS
+# ==============================
 INPUT_FILE = "DumpFile.txt"
-OUTPUT_MD = "resultats.md"
+OUTPUT_MD = "analyse_tcpdump.md"
 
-# Détection générique d'une ligne de trame
+# ==============================
+# REGEX TCPDUMP
+# ==============================
 line_pattern = re.compile(
-    r'^(?P<time>\d+:\d+:\d+\.\d+)\s+'
-    r'(?P<proto>\w+)\s+'
-    r'(?P<src>[^ ]+)\s+>\s+'
-    r'(?P<dst>[^:]+):\s*(?P<rest>.*)'
+    r'^(?P<time>\d{2}:\d{2}:\d{2}\.\d+)\s+'
+    r'(?P<proto>IP|IP6)\s+'
+    r'(?P<src>\S+)\s+>\s+'
+    r'(?P<dst>\S+):\s*(?P<rest>.*)'
 )
 
+# ==============================
+# FONCTIONS
+# ==============================
 def extract_optional(pattern, text):
     match = re.search(pattern, text)
     return match.group(1) if match else ""
 
-packets = []
+def split_ip_port(value):
+    parts = value.rsplit(".", 1)
+    if len(parts) == 2:
+        return parts[0], parts[1]
+    return value, ""
 
-with open(INPUT_FILE, "r") as f:
+# ==============================
+# ANALYSE
+# ==============================
+ip_source_count = defaultdict(int)
+frames = []
+
+# ==============================
+# LECTURE TCPDUMP
+# ==============================
+with open(INPUT_FILE, "r", encoding="utf-8", errors="ignore") as f:
     for line in f:
+        # Ignorer le dump hexadécimal
+        if line.startswith("\t") or line.startswith(" "):
+            continue
+
         match = line_pattern.match(line)
-        if match:
-            rest = match.group("rest")
+        if not match:
+            continue
 
-            packet = {
-                "time": match.group("time"),
-                "proto": match.group("proto"),
-                "src": match.group("src"),
-                "dst": match.group("dst"),
-                "flags": extract_optional(r'Flags\s+\[([^\]]+)\]', rest),
-                "seq": extract_optional(r'seq\s+([^,]+)', rest),
-                "ack": extract_optional(r'ack\s+(\d+)', rest),
-                "length": extract_optional(r'length\s+(\d+)', rest),
-            }
+        rest = match.group("rest")
 
-            packets.append(packet)
+        src_ip, src_port = split_ip_port(match.group("src"))
+        dst_ip, dst_port = split_ip_port(match.group("dst"))
 
-with open(OUTPUT_MD, "w") as md:
-    md.write("# Analyse générique du fichier Dump réseau\n\n")
-    md.write("| Heure | Proto | Source | Destination | Flags | Seq | Ack | Taille |\n")
-    md.write("|-------|-------|--------|-------------|-------|-----|-----|--------|\n")
+        ip_source_count[src_ip] += 1
 
-    for p in packets:
+        frames.append({
+            "time": match.group("time"),
+            "proto": match.group("proto"),
+            "src_ip": src_ip,
+            "src_port": src_port,
+            "dst_ip": dst_ip,
+            "dst_port": dst_port,
+            "flags": extract_optional(r'Flags\s+\[([^\]]+)\]', rest),
+            "seq": extract_optional(r'seq\s+([^,]+)', rest),
+            "ack": extract_optional(r'ack\s+(\d+)', rest),
+            "length": extract_optional(r'length\s+(\d+)', rest),
+        })
+
+# ==============================
+# GÉNÉRATION MARKDOWN
+# ==============================
+with open(OUTPUT_MD, "w", encoding="utf-8") as md:
+
+    md.write("# 📡 Analyse tcpdump\n\n")
+
+    md.write("## 📊 Résumé\n\n")
+    md.write(f"- Nombre total de trames : **{len(frames)}**\n")
+    md.write(f"- Nombre d'IP sources uniques : **{len(ip_source_count)}**\n\n")
+
+    # --------------------------
+    # TABLE ANALYSE IP SOURCES
+    # --------------------------
+    md.write("## 🔝 Top IP sources\n\n")
+    md.write("| IP source | Nombre de trames |\n")
+    md.write("|-----------|------------------|\n")
+
+    for ip, count in sorted(ip_source_count.items(), key=lambda x: x[1], reverse=True):
+        md.write(f"| {ip} | {count} |\n")
+
+    md.write("\n")
+
+    # --------------------------
+    # TABLE DES TRAMES
+    # --------------------------
+    md.write("## 📄 Détails des trames\n\n")
+    md.write("| Heure | Proto | IP source | Port src | IP dest | Port dest | Flags | Seq | Ack | Taille |\n")
+    md.write("|-------|-------|-----------|----------|----------|-----------|-------|-----|-----|--------|\n")
+
+    for f in frames:
         md.write(
-            f"| {p['time']} | {p['proto']} | {p['src']} | {p['dst']} | "
-            f"{p['flags']} | {p['seq']} | {p['ack']} | {p['length']} |\n"
+            f"| {f['time']} | {f['proto']} | {f['src_ip']} | {f['src_port']} | "
+            f"{f['dst_ip']} | {f['dst_port']} | {f['flags']} | "
+            f"{f['seq']} | {f['ack']} | {f['length']} |\n"
         )
 
-print("✅ Markdown généré sans dépendance à un hôte ou port")
+print("✅ analyse_tcpdump.md généré")
