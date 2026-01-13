@@ -1,11 +1,8 @@
-# 📡 Analyse tcpdump
 
-## 📊 Résumé
 
-- Nombre total de trames : **11016**
-- Nombre d'IP sources uniques : **38**
+- Nombre total de trames :
+- Nombre d'IP sources uniques : 
 
-## 🔝 Top IP sources
 
 | IP source | Nombre de trames |
 |-----------|------------------|
@@ -48,7 +45,6 @@
 | par21s12-in-f14.1e100.net | 2 |
 | par10s28-in-f14.1e100.net | 2 |
 
-## 📄 Détails des trames
 
 | Heure | Proto | IP source | Port src | IP dest | Port dest | Flags | Seq | Ack | Taille |
 |-------|-------|-----------|----------|----------|-----------|-------|-----|-----|--------|

@@ -8,4 +8,3 @@ html = markdown.markdown(md_text, extensions=["tables"])
 with open("analyse_tcpdump.html", "w", encoding="utf-8") as f:
     f.write(html)
 
-print("✅ HTML généré")
